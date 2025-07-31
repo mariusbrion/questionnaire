@@ -114,8 +114,8 @@
             }
             
             .form-wrapper {
-                height: 2100px;
-                min-height: 2100px;
+                height: 2000px;
+                min-height: 2000px;
             }
             
             .footer {
@@ -126,8 +126,8 @@
 
         @media (max-width: 480px) {
             .form-wrapper {
-                height: 2100px;
-                min-height: 2100px;
+                height: 2000px;
+                min-height: 2000px;
             }
             
             .form-container {
@@ -346,10 +346,19 @@
         // Amélioration de l'accessibilité et de l'expérience utilisateur
         document.addEventListener('DOMContentLoaded', function() {
             const iframe = document.querySelector('iframe');
+            const contactSection = document.querySelector('.contact-section');
             
             // Gestion du focus pour l'accessibilité
             iframe.addEventListener('load', function() {
                 console.log('Formulaire chargé avec succès');
+                
+                // Détection du scroll dans l'iframe (si possible)
+                try {
+                    // Pour les iframes de même origine, on pourrait accéder au contenu
+                    // Mais Google Forms étant sur un autre domaine, on utilise une approche différente
+                } catch (e) {
+                    // Fallback : détection basée sur le scroll de la page principale
+                }
             });
 
             // Gestion des erreurs de chargement
@@ -362,6 +371,69 @@
                     </div>
                 `;
             });
+
+            // Détection du scroll pour auto-scroll vers la section contact
+            let hasScrolledToContact = false;
+            const formContainer = document.querySelector('.form-container');
+            
+            function checkScrollPosition() {
+                if (hasScrolledToContact) return;
+                
+                const formRect = formContainer.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                
+                // Si l'utilisateur a scrollé jusqu'à 90% du formulaire
+                if (formRect.bottom <= windowHeight * 1.1) {
+                    hasScrolledToContact = true;
+                    
+                    // Petit délai pour une transition plus naturelle
+                    setTimeout(() => {
+                        contactSection.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 500);
+                }
+            }
+
+            // Écouter le scroll avec throttling pour les performances
+            let scrollTimeout;
+            window.addEventListener('scroll', function() {
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+                scrollTimeout = setTimeout(checkScrollPosition, 100);
+            });
+
+            // Alternative : détection via intersection observer (plus performant)
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && entry.intersectionRatio > 0.8 && !hasScrolledToContact) {
+                            hasScrolledToContact = true;
+                            setTimeout(() => {
+                                contactSection.scrollIntoView({ 
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }, 800);
+                        }
+                    });
+                }, {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.8
+                });
+
+                // Observer le bas du formulaire
+                const bottomMarker = document.createElement('div');
+                bottomMarker.style.height = '1px';
+                bottomMarker.style.position = 'absolute';
+                bottomMarker.style.bottom = '100px';
+                bottomMarker.style.width = '100%';
+                formContainer.appendChild(bottomMarker);
+                observer.observe(bottomMarker);
+            }
         });
     </script>
 </body>
