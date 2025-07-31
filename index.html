@@ -364,30 +364,78 @@
                 `;
             });
 
-            // Auto-scroll uniquement sur mobile et après interaction utilisateur
+            // Auto-scroll basé sur l'interaction utilisateur
             let hasScrolledToContact = false;
-            let userHasScrolled = false;
+            let userInteractions = 0;
             const isMobile = window.innerWidth <= 768;
             
             if (isMobile) {
+                // Compteur d'interactions diverses
+                let scrollCount = 0;
+                let touchCount = 0;
+                let clickCount = 0;
+
+                // Détecter les scrolls
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 50) {
+                        scrollCount++;
+                        userInteractions++;
+                    }
+                }, { passive: true });
+
+                // Détecter les touches/clics sur l'iframe et la page
+                document.addEventListener('touchstart', function() {
+                    touchCount++;
+                    userInteractions++;
+                }, { passive: true });
+
+                document.addEventListener('click', function() {
+                    clickCount++;
+                    userInteractions++;
+                }, { passive: true });
+
+                // Détecter les interactions dans l'iframe (approximatif)
+                iframe.addEventListener('mousedown', function() {
+                    userInteractions++;
+                });
+
+                iframe.addEventListener('touchstart', function() {
+                    userInteractions++;
+                }, { passive: true });
+
+                // Vérifier périodiquement si on doit scroller
+                const checkInterval = setInterval(function() {
+                    // Si l'utilisateur a eu au moins 5 interactions ET qu'il a scrollé un minimum
+                    if (userInteractions >= 5 && window.scrollY > 300 && !hasScrolledToContact) {
+                        hasScrolledToContact = true;
+                        clearInterval(checkInterval);
+                        
+                        // Attendre un peu puis scroller vers le bas
+                        setTimeout(() => {
+                            // Scroller vers la section contact
+                            contactSection.scrollIntoView({ 
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }, 1500);
+                    }
+                }, 1000);
+
+                // Nettoyer l'interval après 2 minutes pour éviter qu'il tourne indéfiniment
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                }, 120000);
+
+                // Alternative : détecter quand l'utilisateur semble avoir fini le formulaire
                 const formContainer = document.querySelector('.form-container');
                 
-                // Attendre que l'utilisateur ait scrollé au moins une fois
-                window.addEventListener('scroll', function() {
-                    if (!userHasScrolled && window.scrollY > 100) {
-                        userHasScrolled = true;
-                    }
-                }, { once: false });
-
-                // Intersection Observer pour détecter la fin du formulaire
                 if ('IntersectionObserver' in window) {
                     const observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
-                            // Conditions strictes : utilisateur a scrollé ET arrive à la fin
+                            // Si l'utilisateur arrive vers la fin ET a eu des interactions
                             if (entry.isIntersecting && 
-                                entry.intersectionRatio > 0.9 && 
+                                userInteractions >= 3 && 
                                 !hasScrolledToContact && 
-                                userHasScrolled && 
                                 window.scrollY > 200) {
                                 
                                 hasScrolledToContact = true;
@@ -401,19 +449,19 @@
                         });
                     }, {
                         root: null,
-                        rootMargin: '-50px',
-                        threshold: 0.9
+                        rootMargin: '-100px',
+                        threshold: 0.8
                     });
 
-                    // Observer un marqueur au bas du formulaire
-                    const bottomMarker = document.createElement('div');
-                    bottomMarker.style.height = '1px';
-                    bottomMarker.style.position = 'absolute';
-                    bottomMarker.style.bottom = '50px';
-                    bottomMarker.style.width = '100%';
-                    bottomMarker.style.pointerEvents = 'none';
-                    formContainer.appendChild(bottomMarker);
-                    observer.observe(bottomMarker);
+                    // Observer un marqueur vers la fin du formulaire (pas tout à fait au bas)
+                    const endMarker = document.createElement('div');
+                    endMarker.style.height = '1px';
+                    endMarker.style.position = 'absolute';
+                    endMarker.style.bottom = '200px';
+                    endMarker.style.width = '100%';
+                    endMarker.style.pointerEvents = 'none';
+                    formContainer.appendChild(endMarker);
+                    observer.observe(endMarker);
                 }
             }
         });
