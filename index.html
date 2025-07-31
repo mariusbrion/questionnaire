@@ -67,6 +67,7 @@
             position: relative;
             width: 100%;
             height: 1732px;
+            min-height: 1700px;
         }
 
         iframe {
@@ -114,6 +115,7 @@
             
             .form-wrapper {
                 height: 1732px;
+                min-height: 1700px;
             }
             
             .footer {
@@ -125,6 +127,7 @@
         @media (max-width: 480px) {
             .form-wrapper {
                 height: 1732px;
+                min-height: 1700px;
             }
             
             .form-container {
@@ -155,12 +158,91 @@
         .loading {
             animation: pulse 1.5s ease-in-out infinite;
         }
+
+        .contact-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .contact-section:hover {
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .contact-container {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .contact-container h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1d1d1f;
+            letter-spacing: -0.01em;
+        }
+
+        .contact-container > p {
+            font-size: 1rem;
+            color: #86868b;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .contact-info p {
+            font-size: 1rem;
+            color: #1d1d1f;
+            margin: 0;
+        }
+
+        .contact-info a {
+            color: #007aff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .contact-info a:hover {
+            color: #0056cc;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                padding: 25px 20px;
+            }
+            
+            .contact-container h3 {
+                font-size: 1.2rem;
+            }
+            
+            .contact-container > p {
+                font-size: 0.95rem;
+            }
+            
+            .contact-info {
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>Votre avis sur la voie Sylvain Chavanel</h1>
             <p class="description">
                 2 minutes pour faire avancer la mobilité à Scorbé-Clairvaux. Ce questionnaire s'inscrit dans le cadre d'un mémoire universitaire. Merci pour votre contribution !
             </p>
@@ -176,6 +258,17 @@
                 </iframe>
             </div>
         </main>
+
+        <div class="contact-section">
+            <div class="contact-container">
+                <h3>Entretien complémentaire</h3>
+                <p>Si vous souhaitez participer à un entretien approfondi sur ce sujet (15-20 minutes), merci de me transmettre vos coordonnées :</p>
+                <div class="contact-info">
+                    <p><strong>Email :</strong> <a href="mailto:marius.brion@exemple.fr">marius.brion@exemple.fr</a></p>
+                    <p><strong>Téléphone :</strong> <a href="tel:+33123456789">01 23 45 67 89</a></p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer class="footer">
